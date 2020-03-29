@@ -1,0 +1,5 @@
+{% load humanize form_tags %}
+
+{% for tweet in all_tweets %}
+    {% include 'includes/tweet.html' %}
+{% endfor %}

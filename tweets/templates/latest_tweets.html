@@ -1,0 +1,10 @@
+<ul>
+    {% for tweet in latest_tweets %}
+    <li>
+    <a href="{% url 'detail_tweet' tweet.pk %}">{{ tweet.message|truncatewords:5 }}</a>
+        <div class="text-muted">Created by
+            <a href="{% url 'profile' tweet.created_by.username %}">{{ tweet.created_by }}</a>
+        </div>
+    </li>
+    {% endfor %}
+</ul>

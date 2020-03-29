@@ -1,0 +1,33 @@
+{% load static humanize form_tags twitter_tags %}
+<div class="card border-primary mb-3" style="max-width: available">
+    <div class="card-header text-muted">
+        <img class="rounded-circle" src="{{ comment.comment_author.profile.image.url }}" alt="No image" width="50"
+             height="50">
+        Created by <a href="{% url 'profile' comment.comment_author.username %}">{{ comment.comment_author }}</a>
+        at {{ comment.date_created|naturaltime }}
+        {% if user.is_authenticated %}
+            {% if comment.comment_author == request.user %}
+                <a class="btn border" href="#">Edit comment</a>
+                <a class="btn btn-outline-info" href="#">Reply</a>
+            {% endif %}
+        <a href="{% url 'ajax_comment_like' pk=comment.pk %}" onclick="likeComment(event, {{ comment.pk }})"
+        id="commentLike{{ comment.pk }}">
+            {% if comment|like_comment:request.user %}
+            Unlike
+            {% else %}
+            Like
+            {% endif %}
+        </a>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <p> {% for word in comment.comment_as_list %}
+            {% if word.0 == '#' %}
+                <a href="{% url 'tweets_by_hashtag' word|remove_hashtag %}">{{ word }}</a>
+            {% else %}
+                {{ word }}
+            {% endif %}
+        {% endfor %}
+        </p>
+    </div>
+</div>

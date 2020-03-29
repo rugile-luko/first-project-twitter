@@ -1,0 +1,45 @@
+{% load humanize form_tags twitter_tags %}
+<div class="card border-primary mb-3" style="max-width: available">
+    <div class="card-header text-muted">
+        <img class="rounded-circle" src="{{ tweet.created_by.profile.image.url }}" alt="No image" width="50"
+             height="50">
+        Created by <a href="{% url 'profile' tweet.created_by.username %}">{{ tweet.created_by }}</a>
+        at {{ tweet.created_at|naturaltime }}
+        {% if user.is_authenticated %}
+        {% if tweet.created_by == request.user %}
+            <a class="btn border" href="{% url 'edit_tweet' pk=tweet.pk %}">Edit tweet</a>
+            <a class="btn btn-outline-info" href="{% url 'detail_tweet' pk=tweet.pk %}">Preview</a>
+        {% else %}
+            {% if tweet.created_by|is_follower:request.user %}
+                <a class="btn btn-outline-info"
+                   href="{% url 'unfollow' tweet.created_by.username %}">Unfollow</a>
+            {% else %}
+                <a class="btn btn-outline-info" href="{% url 'follow' tweet.created_by.username %}">Follow</a>
+            {% endif %}
+                <a class="btn btn-outline-info"
+                   href="{% url 'detail_tweet' pk=tweet.pk %}">Reply</a>
+            {% endif %}
+        {% endif %}
+        {% if user.is_authenticated %}
+            {% if tweet.created_by != request.user %}
+                {% if tweet|is_favorite:request.user %}
+                    <a href="{% url 'ajax_favorite_tweet' pk=tweet.pk %}"><i class="fas fa-heart fa-cog fa-2x"
+                    id="tweetHeart{{ tweet.pk }}" onclick="makeFavorite(event, {{ tweet.pk }})"></i></a>
+                {% else %}
+                    <a href="{% url 'ajax_favorite_tweet' pk=tweet.pk %}"><i class="fas fa-heart fa-2x"
+                    id="tweetHeart{{ tweet.pk }}" onclick="makeFavorite(event, {{ tweet.pk }})"></i></a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <p> {% for word in tweet.tweet_as_list %}
+            {% if word.0 == '#' %}
+                <a href="{% url 'tweets_by_hashtag' word|remove_hashtag %}">{{ word }}</a>
+            {% else %}
+                {{ word }}
+            {% endif %}
+        {% endfor %}
+        </p>
+    </div>
+</div>

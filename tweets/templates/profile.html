@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load widget_tweaks form_tags twitter_tags %}
+{% block title %} User profile {% endblock %}
+
+{% block content %}
+    <div class="content-section">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">{{ user.username }}'s Profile</h2>
+                    {% if user.profile != request.user.profile %}
+                        {% if user|is_follower:request.user %}
+                            <a class="btn btn-outline-info align-right"
+                                href="{% url 'unfollow' user.username %}">Unfollow</a>
+                        {% else %}
+                            <a class="btn btn-outline-info" href="{% url 'follow' user.username %}">
+                                Follow</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="media">
+                            <img src="{{ user.profile.image.url }}" width="150" height="150" alt="No image"
+                                 class="align-self-start mr-3 rounded-circle">
+                            <div class="media-body">
+                                <strong class="mt-0">{{ user.email }}</strong>
+                                <p>{{ user.profile.description }}</p>
+                                <p>
+                                <form method="post" enctype="multipart/form-data"   >
+                                    {% csrf_token %}
+                                    {% for field in u_form %}
+                                        <div class="form-group">
+                                        {{ field.label_tag }}
+                                        {% render_field field class="form-control" %}
+                                        </div>
+                                    {% endfor %}
+
+                                    {% for field in p_form %}
+                                        {{ field.label_tag }}
+                                        {% render_field field class="form-control" %}
+                                    {% endfor %}
+
+                                    {% if field.help_text %}
+                                        <small class="form-text text-muted">
+                                            {{ field.help_text }}
+                                        </small>
+                                    {% endif %}
+
+                                    {% if request.user == user %}
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-primary">Update</button>
+                                        </div>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                    {% if user.profile.followers.all.count != 0 %}
+                        <h4 class="card-title text-center">
+                            Followers
+                        </h4>
+                        <ul class="list-group">
+                            {% for follower in user.profile.followers.all %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="{% url 'profile' follower.username %}">{{ follower }}</a>
+                                <span class="badge badge-primary badge-pill">{{ follower.tweets.all.count }}</span>
+                            {% endfor %}
+                            </li>
+                        </ul>
+                    {% endif %}
+                    {% if user.profile.following.all.count != 0 %}
+                        <h4 class="card-title text-center">
+                            Following
+                        </h4>
+                        <ul class="list-group">
+                            {% for following in user.profile.following.all %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="{% url 'profile' following.username %}">{{ following }}</a>
+                                    <span class="badge badge-primary badge-pill">{{ following.tweets.all.count }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                {% include 'includes/tweets.html' with all_tweets=user_tweets %}
+            </div>
+            <div class="col-md-4">
+                <div class="card border-primary mb-3" style="max-width: available">
+                    {% if user.favorite_tweet.all.count != 0 %}
+                        {% if user.profile != request.user.profile %}
+                            <h5 class="card-header text-center">{{ user.username }} Favorite Tweets</h5>
+                            <ul>
+                                {% for favorite_tweet in user.favorite_tweet.all.reverse %}
+                                    <li>
+                                        <a href="{% url 'detail_tweet' pk=favorite_tweet.pk %}">
+                                            {{ favorite_tweet|truncatewords:5 }}</a>
+                                        <div class="text-muted">Created by
+                                            <a href="{% url 'profile' favorite_tweet.created_by.username %}">
+                                                {{ favorite_tweet.created_by }}</a>
+                                            Created at {{ favorite_tweet.created_at }}
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <h5 class="card-header text-center">My Favorite Tweets</h5>
+                            <ul>
+                                {% for favorite_tweet in user.favorite_tweet.all.reverse %}
+                                    <li>
+                                        <a href="{% url 'detail_tweet' pk=favorite_tweet.pk %}">
+                                            {{ favorite_tweet|truncatewords:5 }}</a>
+                                        <div class="text-muted">Created by
+                                            <a href="{% url 'profile' favorite_tweet.created_by.username %}">
+                                                {{ favorite_tweet.created_by }}</a><br>
+                                            Created at {{ favorite_tweet.created_at }}
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% else %}
+                        <h5 class="card-header text-center">No Favorite Tweets Yet</h5>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% include 'includes/paginator.html' with all_tweets=user_tweets %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,28 @@
+body{
+    background-image: url("../img/email-pattern.png");
+}
+
+.logo{
+    font-family: 'Orbitron', sans-serif;
+}
+
+.logo a{
+    color: rgba(0,0,0,.9);
+}
+
+.logo a:hover,
+.logo a:active{
+    text-decoration: none;
+}
+
+.navigation-container {
+    margin-bottom: 1.5rem!important;
+    margin-top: 1.5rem!important;
+    background-color: #e9ecef;
+    border-radius: .25rem;
+    padding: .75rem 1rem;
+}
+
+.fa-cog {
+  color: indianred;
+}

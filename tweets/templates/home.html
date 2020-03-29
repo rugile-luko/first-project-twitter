@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static humanize form_tags twitter_tags %}
+{% block title %}Home{% endblock %}
+{% block breadcrumb %}
+    <div class="row">
+        <div class="col-8">
+            <a class="btn btn-primary" href="{% url 'create_tweet' %}" role="button">Post a Tweet</a>
+            <a class="btn btn-outline-primary" href="{% url 'home' %}?sort=oldToNew">Old to New</a>
+            <a class="btn btn-outline-primary" href="{% url 'home' %}?sort=newToOld">New to Old</a>
+        </div>
+        <div class="col-4">
+            <form action="{% url 'search' %}" method="get" class="form-inline ml-auto">
+                <div class="form-row align-items-center">
+                    <div class="col-auto">
+                        <label class="sr-only" for="inlineFormInput">Name</label>
+                        <input type="text" class="form-control mb-2" name="q" placeholder="Search for tweets...">
+                        <button type="submit" class="btn btn-secondary mb-2">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    {% if user.profile.following.all.count != 0 %}
+        <div class="row">
+            <div class="col-md-8">
+                {% include 'includes/tweets.html' %}
+            </div>
+            <div class="col-md-4">
+                <div class="card border-primary mb-3" style="max-width: available">
+                    <h5 class="card-header text-center">Most Recent Tweets</h5>
+                    {% show_latest_tweets 5 %}
+                </div>
+            </div>
+        </div>
+        {% include 'includes/paginator.html' %}
+    {% else %}
+        <div class="row">
+            <div class="col-md-8">
+                {% include 'includes/tweets.html' %}
+            </div>
+            <div class="col-md-4">
+                <div class="col-md-12">
+                    <div class="card border-primary mb-3">
+                        <h5 class="card-header text-center">Follow someone!</h5>
+                        <ul class="list-group list-group-flush">
+                            {% for user in users %}
+                                <li class="list-group-item">
+                                    <img class="rounded-circle" src="{{ user.profile.image.url }}" alt="No image"
+                                         width="50" height="50">
+                                    <a href="{% url 'profile' user.username %}">{{ user }}</a>
+                                    <a class="btn btn-outline-info" href="{% url 'follow' user.username %}">Follow</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card border-primary mb-3" style="max-width: available">
+                        <h5 class="card-header text-center">Most Recent Tweets</h5>
+                        {% show_latest_tweets 5 %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
