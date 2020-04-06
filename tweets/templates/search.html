@@ -1,9 +1,0 @@
-{% extends 'base.html' %}
-{% load humanize %}
-{% block title %}Search results{% endblock %}
-{% block breadcrumb %}
-    <a class="btn btn-primary" href="{% url 'home' %}" role="button">Go Back</a>
-{% endblock %}
-{% block content %}
-    {% include 'includes/tweets.html' with all_tweets=tweets %}
-{% endblock %}

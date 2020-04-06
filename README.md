@@ -1,2 +1,1 @@
-"# first-project-twitter" 
-"# first-project-twitter" 
+This is my first project created with Python and Django.

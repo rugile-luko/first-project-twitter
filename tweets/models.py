@@ -8,6 +8,9 @@ class Tweet(models.Model):
     created_by = models.ForeignKey(User, null=True, related_name='tweets', on_delete=models.CASCADE)
     favorite_tweet = models.ManyToManyField(User, symmetrical=False, related_name='favorite_tweet', blank=True)
 
+    class Meta:
+        ordering = ('-created_at', )
+
     def __str__(self):
         return self.message
 
@@ -43,11 +46,7 @@ class Comment(models.Model):
 
     def like_comment(self, user):
         like_comment = False
-        print(self.comment_like.filter(id=user.id).exists())
-        print(self.comment_like.filter(id=user.id))
         if self.comment_like.filter(id=user.id).exists():
             like_comment = True
-
-        print(like_comment)
 
         return like_comment

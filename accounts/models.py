@@ -6,7 +6,7 @@ from PIL import Image
 class Profile(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
-    description = models.TextField(max_length=1000, null=True, blank=True,
+    description = models.TextField(max_length=1000, null=True, blank=True, default="",
                                    help_text='The max length of your description is 1000 symbols.')
     followers = models.ManyToManyField(User, blank=True, symmetrical=False, related_name='user_followers')
     following = models.ManyToManyField(User, blank=True, symmetrical=False, related_name='user_following')

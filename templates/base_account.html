@@ -1,0 +1,77 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!-- ==============================================
+    Title and Meta Tags
+    =============================================== -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter Project!</title>
+    <meta name="description" content=""/>
+    <meta name="keywords" content=""/>
+    <meta property="og:title" content=""/>
+    <meta property="og:url" content=""/>
+    <meta property="og:description" content=""/>
+
+    <!-- ==============================================
+    Favicons
+    =============================================== -->
+    <link rel="icon" href="http://themashabrand.com/templates/Fluffs/assets/img/logo.jpg">
+    <link rel="apple-touch-icon" href="http://themashabrand.com/templates/Fluffs/img/favicons/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72"
+          href="http://themashabrand.com/templates/Fluffs/img/favicons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114"
+          href="http://themashabrand.com/templates/Fluffs/img/favicons/apple-touch-icon-114x114.png">
+
+    <!-- ==============================================
+    CSS
+    =============================================== -->
+    <link type="text/css" href="{% static "assets/css/demos/photo.css" %}" rel="stylesheet"/>
+    <link type="text/css" href="{% static "assets/css/account.css" %}" rel="stylesheet"/>
+    <link type="text/css" href="{% static "assets/css/tweet.css" %}" rel="stylesheet"/>
+
+    <!-- ==============================================
+    Feauture Detection
+    =============================================== -->
+    <script src="http://themashabrand.com/templates/Fluffs/assets/js/modernizr-custom.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+		  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+		  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+</head>
+<body class="login-body">
+<!-- ==============================================
+Navigation Section
+=============================================== -->
+<header class="tr-header">
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="twitter-project" href="{% url "home" %}">Twitter Project</a>
+            </div>
+                <div class="navbar-left">
+                <div class="collapse navbar-collapse" id="navbar-collapse"></div>
+            </div><!-- /.navbar-left -->
+            <div class="navbar-right">
+                <ul class="nav navbar-nav">
+                    <li class="button-box">
+                        <button class="btn btn-outline-danger"><a href="{% url "home" %}">Go Back</a></button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+{% block content %}
+{% endblock %}
+
+</body>
+</html>

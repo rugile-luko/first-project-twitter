@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% load widget_tweaks form_tags twitter_tags %}
+
+{% block content %}
+    <section class="profile-two">
+        <div class="container-fluid">
+            <div class="row">
+
+                <div class="col-lg-3">
+                    <aside id="leftsidebar" class="sidebar">
+                        <div class="simple-box">
+                            <ul class="list">
+                                <li>
+                                    <div class="user-info">
+                                        <div class="image">
+                                            <a href="#">
+                                                <img src="{{ user.profile.image.url }}"
+                                                     class="img-responsive img-circle"
+                                                     alt="User">
+                                            </a>
+                                        </div>
+                                        <div class="detail">
+                                            <h4>{{ user.username }}</h4>
+                                            <small>{{ user.email }}</small>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                {% if user.profile != request.user.profile %}
+                                                    {% if user|is_follower:request.user %}
+                                                        <button class="btn btn-outline-danger"><a
+                                                                href="{% url "unfollow" user.username %}">Unfollow</a>
+                                                        </button>
+                                                    {% else %}
+                                                        <button class="btn btn-outline-danger"><a
+                                                                href="{% url "follow" user.username %}">Follow</a>
+                                                        </button>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <form method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        {% for field in u_form %}
+                                            <div class="form-group">
+                                                {{ field.label_tag }}
+                                                {% render_field field class="form-control" %}
+                                            </div>
+                                        {% endfor %}
+
+                                        {% for field in p_form %}
+                                            {{ field.label_tag }}
+                                            {% render_field field class="form-control" %}
+                                        {% endfor %}
+
+                                        {% if field.help_text %}
+                                            <small class="form-text text-muted">
+                                                {{ field.help_text }}
+                                            </small>
+                                        {% endif %}
+                                        <br/>
+                                        {% if request.user == user %}
+                                            <div class="form-group">
+                                                <button type="submit" class="btn btn-primary">Update</button>
+                                            </div>
+                                        {% endif %}
+                                    </form>
+                                    <small class="text-muted"></small>
+                                    <p class="text-center">{{ user.profile.description }}</p>
+                                    <hr>
+                                </li>
+                            </ul>
+                        </div>
+                    </aside>
+                </div><!--/ col-lg-3-->
+
+                <div class="col-lg-6">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {% if user_tweets %}
+                                {% include "includes/tweets.html" with all_tweets=user_tweets %}
+                            {% else %}
+                                <div class="card">
+                                    <div class="simple-box">
+                                        <p class="tweet-text" class="text-center">User has not posted any tweets
+                                            yet.</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div><!--/ row -->
+                </div>
+
+                <div class="col-lg-3">
+
+                    {% if user.profile.followers.all.count != 0 %}
+                        <div class="trending-box">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h4>Followers</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="suggestion-box full-width">
+                            <div class="suggestions-list">
+                                {% for follower in user.profile.followers.all %}
+                                    <div class="suggestion-body">
+                                        <img class="img-responsive img-circle" src="{{ follower.profile.image.url }}"
+                                             alt="">
+                                        <div class="name-box">
+                                            <h4><a href="{% url 'profile' follower.username %}"
+                                                   class="link">{{ follower }}</a></h4>
+                                            <span>{{ follower.tweets.all.count }}{% if follower.tweets.all.count == 1 %}
+                                                Tweet {% else %} Tweets {% endif %}</span>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div><!--suggestions-list end-->
+                        </div>
+                    {% endif %}
+
+                    {% if user.profile.following.all.count != 0 %}
+                        <div class="trending-box">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h4>Following</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="suggestion-box full-width">
+                            <div class="suggestions-list">
+                                {% for following in user.profile.following.all %}
+                                    <div class="suggestion-body">
+                                        <img class="img-responsive img-circle" src="{{ following.profile.image.url }}"
+                                             alt="">
+                                        <div class="name-box">
+                                            <h4><a href="{% url 'profile' following.username %}"
+                                                   class="link">{{ following }}</a></h4>
+                                            <span>{{ following.tweets.all.count }}
+                                                {% if following.tweets.all.count == 1 %} Tweet {% else %}
+                                                    Tweets {% endif %}</span>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div><!--suggestions-list end-->
+                        </div>
+                    {% endif %}
+
+                    {% if user.favorite_tweet.all.count != 0 %}
+                        <div class="trending-box">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h4>{% if user.profile != request.user.profile %}{{ user.username }} Favorite Tweets
+                                    {% else %}My Favorite Tweets{% endif %}</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="suggestion-box full-width">
+                            <div class="suggestions-list">
+                                {% for favorite_tweet in user.favorite_tweet.all.reverse %}
+                                    <div class="suggestion-body">
+                                        <img class="img-responsive img-circle"
+                                             src="{{ favorite_tweet.created_by.profile.image.url }}" alt="">
+                                        <div class="name-box">
+                                            <h4><a href="{% url 'detail_tweet' pk=favorite_tweet.pk %}"
+                                                   class="link">{{ favorite_tweet|truncatewords:3 }}</a></h4>
+                                            <span>Created by {{ favorite_tweet.created_by }}</span>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                {% else %}
+
+                            </div><!--suggestions-list end-->
+                        </div>
+                    {% endif %}
+
+                </div><!--/ row-->
+            </div><!--/ container -->
+    </section><!--/ profile -->
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="col-md-4">#}
+
+
+{#                            </ul>#}
+{#                        {% endif %}#}
+{#                    {% else %}#}
+{#                        <h5 class="card-header text-center">No Favorite Tweets Yet</h5>#}
+{#                    {% endif %}#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#        {% include 'includes/paginator.html' with all_tweets=user_tweets %}#}
+{#        </div>#}
+{#    </div>#}
+{#{% endblock %}#}

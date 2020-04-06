@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
@@ -7,7 +8,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
 from tweets.models import Tweet
-from . import models
 from django.core.mail import send_mail
 
 
@@ -26,10 +26,9 @@ def signup(request):
 @login_required
 def profile(request, username):
     user = get_object_or_404(User, username=username)
-    user_tweets = Tweet.objects.filter(created_by=user).order_by('-created_at')
+    user_tweets = Tweet.objects.filter(created_by=user)
 
     page = request.GET.get('page', 1)
-
     paginator = Paginator(user_tweets, 13)
 
     try:
@@ -41,7 +40,7 @@ def profile(request, username):
 
     if request.user.is_authenticated and request.user == user:
         if request.method == "POST":
-            user_tweets = Tweet.objects.filter(created_by=request.user).order_by('-created_at')
+            user_tweets = Tweet.objects.filter(created_by=request.user)
             u_form = forms.UserUpdateForm(request.POST, instance=request.user)
             p_form = forms.ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
             if u_form.is_valid() and p_form.is_valid():
@@ -73,8 +72,8 @@ def profile(request, username):
 
 @login_required
 def follow(request, username):
-    user = get_object_or_404(User, username=username) # monika
-    current_user = request.user # rugile
+    user = get_object_or_404(User, username=username)
+    current_user = request.user
     user.profile.followers.add(current_user)
     current_user.profile.following.add(user)
     return redirect('profile', username=username)
@@ -82,8 +81,8 @@ def follow(request, username):
 
 @login_required
 def unfollow(request, username):
-    user = get_object_or_404(User, username=username) # monika
-    current_user = request.user # rugile
+    user = get_object_or_404(User, username=username)
+    current_user = request.user
     user.profile.followers.remove(current_user)
     current_user.profile.following.remove(user)
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
@@ -94,15 +93,6 @@ def favorite(request):
     user = request.user
     user.profile.favorite_tweet.add(user)
     return redirect('home')
-#
-#
-# @login_required
-# def unfollow(request, username):
-#     user = get_object_or_404(User, username=username) # monika
-#     current_user = request.user # rugile
-#     user.profile.followers.remove(current_user)
-#     current_user.profile.following.remove(user)
-#     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 
 def contactview(request):
@@ -110,11 +100,8 @@ def contactview(request):
     if request.method == 'POST':
         form = forms.ContactForm(request.POST)
         if form.is_valid():
-            name = form.cleaned_data.get("name")
-            email = form.cleaned_data.get("email")
-            comment = form.cleaned_data.get("comment")
-            comment = name + " with the email, " + email + ", sent the following message:\n\n" + comment
-            send_mail('subject', comment, [email], [email])
+            comment = "User named %s sent the following message: \n\n %s." % (form.cleaned_data.get("name"), form.cleaned_data.get("comment"))
+            send_mail('New Message', comment, form.cleaned_data.get("email"), [settings.ADMIN_EMAIL])
             messages.success(request, 'Your message has been sent!')
 
         return redirect('contact')

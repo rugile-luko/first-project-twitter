@@ -1,0 +1,24 @@
+.twitter-project {
+    font-family: 'Pacifico', serif;
+    color: grey;
+    font-size: 4rem;
+    font-weight: 300;
+}
+
+.login-body {
+    background-color: #F0F0F0;
+}
+
+.login-text {
+    color: grey;
+    font-family: "Times New Roman", sans-serif;
+    font-size: 2rem;
+    font-weight: 200;
+}
+
+.login-form-text {
+    color: grey;
+    font-family: "Times New Roman", sans-serif;
+    font-size: 1.3rem;
+    text-align: left;
+}

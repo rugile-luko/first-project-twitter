@@ -1,69 +1,130 @@
 {% extends 'base.html' %}
-{% load static humanize form_tags twitter_tags %}
-{% block title %}Home{% endblock %}
-{% block breadcrumb %}
-    <div class="row">
-        <div class="col-8">
-            <a class="btn btn-primary" href="{% url 'create_tweet' %}" role="button">Post a Tweet</a>
-            <a class="btn btn-outline-primary" href="{% url 'home' %}?sort=oldToNew">Old to New</a>
-            <a class="btn btn-outline-primary" href="{% url 'home' %}?sort=newToOld">New to Old</a>
-        </div>
-        <div class="col-4">
-            <form action="{% url 'search' %}" method="get" class="form-inline ml-auto">
-                <div class="form-row align-items-center">
-                    <div class="col-auto">
-                        <label class="sr-only" for="inlineFormInput">Name</label>
-                        <input type="text" class="form-control mb-2" name="q" placeholder="Search for tweets...">
-                        <button type="submit" class="btn btn-secondary mb-2">Search</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-{% endblock %}
+{% load static humanize twitter_tags form_tags widget_tweaks %}
 
 {% block content %}
-    {% if user.profile.following.all.count != 0 %}
-        <div class="row">
-            <div class="col-md-8">
-                {% include 'includes/tweets.html' %}
-            </div>
-            <div class="col-md-4">
-                <div class="card border-primary mb-3" style="max-width: available">
-                    <h5 class="card-header text-center">Most Recent Tweets</h5>
-                    {% show_latest_tweets 5 %}
-                </div>
-            </div>
-        </div>
-        {% include 'includes/paginator.html' %}
-    {% else %}
-        <div class="row">
-            <div class="col-md-8">
-                {% include 'includes/tweets.html' %}
-            </div>
-            <div class="col-md-4">
-                <div class="col-md-12">
-                    <div class="card border-primary mb-3">
-                        <h5 class="card-header text-center">Follow someone!</h5>
-                        <ul class="list-group list-group-flush">
-                            {% for user in users %}
-                                <li class="list-group-item">
-                                    <img class="rounded-circle" src="{{ user.profile.image.url }}" alt="No image"
-                                         width="50" height="50">
-                                    <a href="{% url 'profile' user.username %}">{{ user }}</a>
-                                    <a class="btn btn-outline-info" href="{% url 'follow' user.username %}">Follow</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
+    <section class="newsfeed">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-3">
+                    {% if user.is_authenticated and request.user == user %}
+                        <aside id="leftsidebar" class="sidebar">
+                            <div class="simple-box">
+                                <ul class="list">
+                                    <li>
+                                        <div class="user-info">
+                                            <div class="image">
+                                                <a>
+                                                    <img src="{{ user.profile.image.url }}"
+                                                         class="img-circle img-responsive" alt="User">
+                                                </a>
+                                            </div>
+                                            <div class="detail">
+                                                <h4>{{ user.username }}</h4>
+                                                <small>{{ user.email }}</small>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <small class="text-muted"></small>
+                                        <p class="text-center">{{ user.profile.description }}</p>
+                                        <hr>
+                                    </li>
+                                </ul>
+                            </div>
+                        </aside>
+                    {% endif %}
+                </div><!--/ col-lg-3-->
+
+                <div class="col-lg-6">
+                    {% if user.is_authenticated and request.user == user %}
+                            <div class="cardbox">
+                                <div class="tweet-box">
+
+                                <form method="post" novalidate>
+                                    {% csrf_token %}
+
+                                    {% for field in form %}
+                                        <div class="form-group" id="form-field">
+                                            {{ field.label_tag }}
+
+                                            {% render_field field class="form-control" %}
+
+                                            {% if field.name == 'message' %}
+                                                <p class="tweet-text">You have
+                                                    <span id="message_symbols_count">{{ form.instance.symbols_left }}</span> symbols left.</p>
+                                            {% endif %}
+
+                                            {% if field.help_text %}
+                                                <small class="form-text text-muted">
+                                                    {{ field.help_text }}
+                                                </small>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                    <button type="submit" class="btn btn-primary">Post</button>
+
+                                </form>
+                                    <br/>
                     </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="card border-primary mb-3" style="max-width: available">
-                        <h5 class="card-header text-center">Most Recent Tweets</h5>
-                        {% show_latest_tweets 5 %}
                     </div>
+                {% endif %}
+                    {% include 'includes/tweets.html' %}
+                    {% include 'includes/paginator.html' %}
                 </div>
-            </div>
-        </div>
-    {% endif %}
+
+                <!--/ col-lg-6 -->
+                <div class="col-lg-3">
+                    <div class="trending-box">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {% if user.profile.following.all.count != 0 %}
+                                    <h4>Latest Tweets</h4>
+                                {% else %}
+                                    <h4>Follow Someone!</h4>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="suggestion-box full-width">
+                        <div class="suggestions-list">
+                            {% if user.profile.following.all.count != 0 %}
+                                <div class="suggestion-body">
+                                    {% show_latest_tweets 5 %}
+                                </div>
+                            {% else %}
+                                {% for user in users %}
+                                    <div class="suggestion-body">
+                                        <img class="img-responsive img-circle" width="30" height="30"
+                                             src="{{ user.profile.image.url }}"
+                                             alt="User">
+                                        <div class="name-box">
+                                            <h4>{{ user }}</h4>
+                                        </div>
+                                        <span><a href="{% url "follow" user.username %}" class="link">Follow!</a></span>
+                                    </div>
+                                {% endfor %}
+                                </div><!--suggestions-list end-->
+                                </div>
+
+                                <div class="trending-box">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <h4>Most Recent Tweets</h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="suggestion-box full-width">
+                                    <div class="suggestions-list">
+                                        <div class="suggestion-body">
+                                            {% show_latest_tweets 5 %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                </div>
+            </div><!--/ row -->
+        </div><!--/ container -->
+
+    </section><!--/ newsfeed -->
 {% endblock %}

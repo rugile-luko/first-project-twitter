@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-3"></div>
+        <div class="col-lg-6">
+            <div class="newsfeed">
+            <div class="cardbox">
+                <div class="cardbox-heading">
+                    <h2 class="login-text text-center">Contact Us</h2>
+                </div>
+                <div class="card">
+                    <div class="tweet-box">
+                        <form method="post" novalidate>
+                            {% csrf_token %}
+                            {% include 'includes/form.html' %}
+                            <button class="btn btn-primary">Send</button>
+                        </form>
+                        <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </div>
+        <div class="col-lg-3"></div>
+    </div>
+{% endblock %}

@@ -1,33 +1,50 @@
 {% load static humanize form_tags twitter_tags %}
-<div class="card border-primary mb-3" style="max-width: available">
-    <div class="card-header text-muted">
-        <img class="rounded-circle" src="{{ comment.comment_author.profile.image.url }}" alt="No image" width="50"
-             height="50">
-        Created by <a href="{% url 'profile' comment.comment_author.username %}">{{ comment.comment_author }}</a>
-        at {{ comment.date_created|naturaltime }}
-        {% if user.is_authenticated %}
-            {% if comment.comment_author == request.user %}
-                <a class="btn border" href="#">Edit comment</a>
-                <a class="btn btn-outline-info" href="#">Reply</a>
-            {% endif %}
-        <a href="{% url 'ajax_comment_like' pk=comment.pk %}" onclick="likeComment(event, {{ comment.pk }})"
+
+<div class="cardbox">
+    <div class="cardbox-heading">
+        <div class="media m-0">
+            <div class="d-flex mr-3">
+                <a href="#"><img class="img-responsive img-circle" src="{{ comment.comment_author.profile.image.url }}"
+                                 alt="User"></a>
+            </div>
+            <div class="media-body">
+                <a href="{% url 'profile' comment.comment_author.username %}"><p class="m-0">{{ comment.comment_author }}</p></a>
+                <small><span>{{ comment.date_created|naturaltime }}</span></small>
+            </div>
+        </div><!--/ media -->
+    </div><!--/ cardbox-heading -->
+
+{#    <div class="cardbox-item">#}
+<div class="card">
+        <div class="tweet-box">
+        <p class="tweet-text">
+            {% for word in comment.comment_as_list %}
+                {% if word.0 == '#' %}
+                    <a href="{% url 'home' %}?hashtag={{ word|slice:"1:" }}" class="link">{{ word }}</a>
+                {% else %}
+                    {{ word }}
+                {% endif %}
+            {% endfor %}</p>
+        </div>
+</div>
+{#    </div><!--/ cardbox-item -->#}
+
+    <div class="cardbox-like">
+        <ul>
+        <li class="page-text">
+            <span class="span-last" id="commentsCount{{ comment.pk }}">{{ comment.comment_like.all.count }} </span>
+        </li>
+            {% if user.is_authenticated %}
+                <li class="page-text"><a href="{% url 'ajax_comment_like' pk=comment.pk %}" onclick="likeComment(event, {{ comment.pk }})"
         id="commentLike{{ comment.pk }}">
             {% if comment|like_comment:request.user %}
             Unlike
             {% else %}
             Like
             {% endif %}
-        </a>
-        {% endif %}
-    </div>
-    <div class="card-body">
-        <p> {% for word in comment.comment_as_list %}
-            {% if word.0 == '#' %}
-                <a href="{% url 'tweets_by_hashtag' word|remove_hashtag %}">{{ word }}</a>
-            {% else %}
-                {{ word }}
+                </a></li>
             {% endif %}
-        {% endfor %}
-        </p>
-    </div>
-</div>
+        </ul>
+    </div><!--/ cardbox-like -->
+
+</div><!--/ cardbox -->

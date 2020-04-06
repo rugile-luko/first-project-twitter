@@ -1,0 +1,47 @@
+{% extends 'base_account.html' %}
+{% load form_tags widget_tweaks %}
+
+{% block content %}
+    <section class="login">
+        <div class="container">
+            <div class="banner-content">
+                <div class="row">
+                    <p class="twitter-project">Twitter Project</p>
+                    <form method="post" novalidate>
+                        <h3 class="form-signin-heading login-text">Sign Up to Twitter Project</h3>
+                        <div class="form-group">
+                            {% csrf_token %}
+                            <input type="hidden" name="text" value="{{ next }}">
+                            {% include 'includes/form.html' %}
+                        </div>
+                        <button class="kafe-btn kafe-btn-blue btn-block" type="submit">Create an Account!</button>
+                        <button class="btn btn-outline-danger"><a href="{% url "login" %}" class="link">Already have an account? Log in!</a></button>
+                    </form>
+                    <br/>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{#{% block content %}#}
+{#    <div class="row justify-content-center">#}
+{#        <div class="col-lg-8 col-md-10 col-sm-12">#}
+{#        <br/>#}
+{#            <div class="card">#}
+{#                <div class="card-body">#}
+{#                    <h3 class="card-title">Sign Up to Tweet</h3>#}
+{#                    <form method="post" novalidate>#}
+{#                        {% csrf_token %}#}
+{#                        {% include 'includes/form.html' %}#}
+{#                        <button type="submit" class="btn btn-primary">Create an Account</button>#}
+{#                    </form>#}
+{#                </div>#}
+{#                <div class="card-footer text-muted text-center">#}
+{#                    Already Have an Account? <a href="{% url 'login' %}">Log In</a>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#    <br/>#}
+{#{% endblock %}#}

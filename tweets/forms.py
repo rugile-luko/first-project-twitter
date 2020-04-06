@@ -8,6 +8,7 @@ class TweetForm(forms.ModelForm):
             attrs={'rows': 5, 'placeholder': 'What is on your mind?'}
         ),
         max_length=140,
+        label=''
     )
 
     class Meta:
@@ -24,4 +25,8 @@ class CommentForm(forms.ModelForm):
             'comment': forms.Textarea(
                 attrs={'rows': 5, 'placeholder': 'What is on your mind?'}
             )
+        }
+
+        labels = {
+            "comment": "Say something about this tweet!"
         }
