@@ -18,6 +18,7 @@ After that you can create a virtual environment, activate it and install the req
 python -m venv env
 cd env/Scripts/activate.bat                 // for Windows users
 source env/bin/activate                     // for OS X users
+source bin/activate                         // for Linux users
 python -m pip install -r requirements.txt
 ```
 
